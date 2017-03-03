@@ -15,8 +15,8 @@ def lin_reg(vals):
 image_names = 'IMG_4025.JPG','IMG_4026.JPG','IMG_4027.JPG','IMG_4028.JPG'
 for z in range(0,4):
     sharpie_test_o = img_as_float(cv2.imread(image_names[z]))
-    zero = np.zeros_like(sharpie_test_o)
-    sharpie_test = seg.slic(sharpie_test_o,n_segments=10000,compactness = 0.00001,max_iter=20)
+    zero = np.empty_like(sharpie_test_o)
+    sharpie_test = seg.slic(sharpie_test_o,n_segments=10000,compactness = 0.00001,max_iter=30)
     h,w = sharpie_test.shape
     #x_min,x_max,y_min,y_max
     x_y_min_max_values = [[-1,-1,-1,-1] for x in range(0,np.amax(sharpie_test)+1)]
@@ -40,6 +40,8 @@ for z in range(0,4):
         a,b = lin_reg(n_sum_x_y_xx_xy[x_y_min_max_values.index(x)])
         for xx in range(x[0],x[1]):
             if (a + xx*b) < 2447 and (a + xx*b) > 0:
-                zero[xx][a + xx*b] = 1
-    #sharpie_test_i = seg.mark_boundaries(zero,sharpie_test,color = (0,1,0),mode='thick')*255
-    cv2.imwrite('img'+str(z)+'.png',np.rot90(zero,3)*255)
+                zero[xx][a + xx*b] = 255
+    sharpie_test_i = zero + sharpie_test_o*255
+    cv2.imwrite('res'+str(z)+'.png',np.rot90(zero,3))
+    cv2.imwrite('img_and_res_'+str(z)+'.png',np.rot90(sharpie_test_i,3))
+    print str(z)+" done"
